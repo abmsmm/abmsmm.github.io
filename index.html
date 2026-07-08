@@ -186,7 +186,6 @@
             let password = document.getElementById('gmail-pass').value.trim();
             if (email && password) {
                 gmailsArray.push({ email: email, password: password });
-                localStorage.setItem('abm_orders', JSON.stringify(ordersArray)); // sync safety
                 localStorage.setItem('abm_gmails', JSON.stringify(gmailsArray));
                 renderGmails();
                 document.getElementById('gmail-addr').value = '';
@@ -198,3 +197,8 @@
             if(confirm("Delete this account from list?")) {
                 gmailsArray.splice(index, 1);
                 localStorage.setItem('abm_gmails', JSON.stringify(gmailsArray));
+                renderGmails();
+            }
+        }
+
+        function renderGmails() {
