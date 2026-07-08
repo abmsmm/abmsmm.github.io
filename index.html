@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Dashboard</title>
+    <title>Abm Private Admin Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #1e1e1e; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.6); width: 85%; max-width: 400px; box-sizing: border-box; }
-        input { padding: 12px; width: 100%; margin: 15px 0; border: none; border-radius: 6px; background: #2a2a2a; color: white; font-size: 16px; text-align: center; box-sizing: border-box; }
-        button { padding: 12px 25px; background: #00adb5; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #121212; color: white; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; padding: 20px 0; box-sizing: border-box; }
+        .box { background: #1e1e1e; padding: 25px; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.6); width: 90%; max-width: 450px; box-sizing: border-box; margin: auto; }
+        input, textarea { padding: 12px; width: 100%; margin: 10px 0; border: none; border-radius: 6px; background: #2a2a2a; color: white; font-size: 15px; text-align: center; box-sizing: border-box; }
+        textarea { text-align: left; resize: vertical; height: 80px; font-family: Arial, sans-serif; }
+        button { padding: 12px 25px; background: #00adb5; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; box-sizing: border-box; margin-top: 5px; }
         button:active { background: #007a80; }
         .hidden { display: none !important; }
-        .panel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 25px; }
-        .card { background: #2a2a2a; padding: 22px 10px; border-radius: 8px; text-decoration: none; color: #00adb5; font-weight: bold; font-size: 15px; border: 1px solid #383838; transition: 0.2s; display: block; }
-        .card:active { background: #333; border-color: #00adb5; }
+        .panel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
+        .card { background: #2a2a2a; padding: 18px 10px; border-radius: 8px; text-decoration: none; color: #00adb5; font-weight: bold; font-size: 14px; border: 1px solid #383838; display: block; }
+        .stats-box { background: #252525; border: 1px dashed #00adb5; border-radius: 8px; padding: 15px; margin: 15px 0; font-size: 18px; font-weight: bold; color: #fff; }
+        .stats-box span { color: #00adb5; font-size: 22px; }
+        .section-title { text-align: left; color: #00adb5; font-size: 16px; margin: 20px 0 10px 0; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; }
+        th, td { padding: 8px; border-bottom: 1px solid #333; }
+        th { color: #00adb5; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; width: auto; margin: 0; background: #ff4444; }
     </style>
 </head>
 <body>
@@ -27,25 +34,126 @@
         <button onclick="checkPass()">Unlock Panel</button>
     </div>
 
-    <!-- YOUR PRIVATE PANEL -->
+    <!-- YOUR PRIVATE SMM ADMIN PANEL -->
     <div id="panel-box" class="box hidden">
-        <h2 style="margin-top:0; color:#00adb5;">Abm</h2>
-        <p style="color: #aaa; font-size: 14px; margin-bottom:10px;">Welcome back, Admin.</p>
+        <h2 style="margin-top:0; color:#00adb5; margin-bottom: 5px;">Abm</h2>
+        <p style="color: #aaa; font-size: 14px; margin-top: 0;">SMM Management Console</p>
         
+        <!-- EARNINGS COUNTER -->
+        <div class="stats-box">
+            Total Earnings: <span id="earnings-display">$0</span>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <input type="number" id="revenue-input" placeholder="Amount ($)" style="margin:0; padding:6px; font-size:13px;">
+                <button onclick="addEarnings()" style="margin:0; padding:6px; font-size:13px; width:70px;">Add</button>
+                <button onclick="clearEarnings()" style="margin:0; padding:6px; font-size:13px; width:70px; background:#444;">Clear</button>
+            </div>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div class="section-title">Quick Links</div>
         <div class="panel-grid">
             <a href="https://github.io" target="_blank" class="card">Abm site</a>
             <a href="https://github.com" target="_blank" class="card">GitHub</a>
         </div>
+
+        <!-- ORDER TRACKING TOOL -->
+        <div class="section-title">Order Tracker</div>
+        <input type="text" id="client-name" placeholder="Client Name / Platform">
+        <input type="text" id="service-type" placeholder="Service (e.g. 1k Followers)">
+        <button onclick="addOrder()">Log New Order</button>
+        
+        <table id="orders-table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="orders-list">
+                <!-- Orders will drop here dynamically -->
+            </tbody>
+        </table>
+
+        <!-- PRIVATE NOTES BOX -->
+        <div class="section-title">Admin Work Notes</div>
+        <textarea id="notes-area" placeholder="Type drafts, hashtag logs, or reminders here... Your text saves automatically." oninput="saveNotes()"></textarea>
+
     </div>
 
     <script>
+        // Password Protection
         function checkPass() {
             if (document.getElementById('pass').value === '1234') {
                 document.getElementById('login-box').classList.add('hidden');
                 document.getElementById('panel-box').classList.remove('hidden');
+                loadDashboardData();
             } else {
                 alert('Access Denied: Incorrect Password');
             }
+        }
+
+        // Local Storage Engine to keep data persistent and private
+        function saveNotes() {
+            localStorage.setItem('abm_notes', document.getElementById('notes-area').value);
+        }
+
+        let totalEarnings = parseFloat(localStorage.getItem('abm_earnings')) || 0;
+        let ordersArray = JSON.parse(localStorage.getItem('abm_orders')) || [];
+
+        function loadDashboardData() {
+            document.getElementById('notes-area').value = localStorage.getItem('abm_notes') || '';
+            document.getElementById('earnings-display').innerText = '$' + totalEarnings;
+            renderOrders();
+        }
+
+        function addEarnings() {
+            let amt = parseFloat(document.getElementById('revenue-input').value);
+            if (!isNaN(amt) && amt > 0) {
+                totalEarnings += amt;
+                localStorage.setItem('abm_earnings', totalEarnings);
+                document.getElementById('earnings-display').innerText = '$' + totalEarnings;
+                document.getElementById('revenue-input').value = '';
+            }
+        }
+
+        function clearEarnings() {
+            if(confirm("Reset earnings log to $0?")) {
+                totalEarnings = 0;
+                localStorage.removeItem('abm_earnings');
+                document.getElementById('earnings-display').innerText = '$0';
+            }
+        }
+
+        function addOrder() {
+            let client = document.getElementById('client-name').value.trim();
+            let service = document.getElementById('service-type').value.trim();
+            if (client && service) {
+                ordersArray.push({ client: client, service: service });
+                localStorage.setItem('abm_orders', JSON.stringify(ordersArray));
+                renderOrders();
+                document.getElementById('client-name').value = '';
+                document.getElementById('service-type').value = '';
+            }
+        }
+
+        function deleteOrder(index) {
+            ordersArray.splice(index, 1);
+            localStorage.setItem('abm_orders', JSON.stringify(ordersArray));
+            renderOrders();
+        }
+
+        function renderOrders() {
+            let list = document.getElementById('orders-list');
+            list.innerHTML = '';
+            ordersArray.forEach((item, idx) => {
+                let row = `<tr>
+                    <td>${item.client}</td>
+                    <td>${item.service}</td>
+                    <td><button class="btn-sm" onclick="deleteOrder(${idx})">Done</button></td>
+                </tr>`;
+                list.innerHTML += row;
+            });
         }
     </script>
 </body>
